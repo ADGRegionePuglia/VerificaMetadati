@@ -1,0 +1,626 @@
+<!doctype html>
+<html lang="en-US">
+<head>
+    <meta charset="utf-8">
+    <title>VERIFICA METADATI PDF</title>
+    <script type="module"> import pdfjsDist from 'https://cdn.jsdelivr.net/npm/pdfjs-dist@5.2.133/+esm' </script>
+    <script src="https://unpkg.com/pdf-lib@1.17.1"></script>
+    <script src="https://unpkg.com/downloadjs@1.4.7"></script>
+    <svg style="display:none" aria-hidden="true" id="svgdefs" version="2" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+            <symbol id="check" viewBox="0 0 512 512">
+                <title>Check</title>
+                <path d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM369 209L241 337c-9.4 9.4-24.6 9.4-33.9 0l-64-64c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l47 47L335 175c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9z"/>
+            </symbol>
+            <symbol id="xmark" viewBox="0 0 512 512">
+                <title>Xmark</title>
+                <path d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM175 175c9.4-9.4 24.6-9.4 33.9 0l47 47 47-47c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9l-47 47 47 47c9.4 9.4 9.4 24.6 0 33.9s-24.6 9.4-33.9 0l-47-47-47 47c-9.4 9.4-24.6 9.4-33.9 0s-9.4-24.6 0-33.9l47-47-47-47c-9.4-9.4-9.4-24.6 0-33.9z"/>
+            </symbol>
+            <symbol id="s_pdf" viewBox="0 0 512 512">
+                <title>PDF</title>
+                <path d="M0 64C0 28.7 28.7 0 64 0L224 0l0 128c0 17.7 14.3 32 32 32l128 0 0 144-208 0c-35.3 0-64 28.7-64 64l0 144-48 0c-35.3 0-64-28.7-64-64L0 64zm384 64l-128 0L256 0 384 128zM176 352l32 0c30.9 0 56 25.1 56 56s-25.1 56-56 56l-16 0 0 32c0 8.8-7.2 16-16 16s-16-7.2-16-16l0-48 0-80c0-8.8 7.2-16 16-16zm32 80c13.3 0 24-10.7 24-24s-10.7-24-24-24l-16 0 0 48 16 0zm96-80l32 0c26.5 0 48 21.5 48 48l0 64c0 26.5-21.5 48-48 48l-32 0c-8.8 0-16-7.2-16-16l0-128c0-8.8 7.2-16 16-16zm32 128c8.8 0 16-7.2 16-16l0-64c0-8.8-7.2-16-16-16l-16 0 0 96 16 0zm80-112c0-8.8 7.2-16 16-16l48 0c8.8 0 16 7.2 16 16s-7.2 16-16 16l-32 0 0 32 32 0c8.8 0 16 7.2 16 16s-7.2 16-16 16l-32 0 0 48c0 8.8-7.2 16-16 16s-16-7.2-16-16l0-64 0-64z"/>
+            </symbol>
+            <symbol id="warning" viewBox="0 0 512 512">
+                <title>Warning</title>
+                <path d="M256 32c14.2 0 27.3 7.5 34.5 19.8l216 368c7.3 12.4 7.3 27.7 .2 40.1S486.3 480 472 480L40 480c-14.3 0-27.6-7.7-34.7-20.1s-7-27.8 .2-40.1l216-368C228.7 39.5 241.8 32 256 32zm0 128c-13.3 0-24 10.7-24 24l0 112c0 13.3 10.7 24 24 24s24-10.7 24-24l0-112c0-13.3-10.7-24-24-24zm32 224a32 32 0 1 0 -64 0 32 32 0 1 0 64 0z"/>
+            </symbol>
+        </defs>
+    </svg>
+    <style>
+        .main-container{
+            display: flex;
+            flex-wrap: wrap-reverse;
+            justify-content: space-evenly;
+            width: 100%;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column; /* Imposta il contenitore principale come colonna */
+            width: 33%;
+        }
+
+        @media (max-width: 1250px) {
+            .container {
+                flex-basis: 100%; /* Make items take up full width on smaller screens */
+                max-width: 100%; /* Ensure they don't exceed 100% */
+                margin: 10px 0; /* Adjust margins for stacking */
+            }
+        }
+
+        .riga {
+            display: flex;
+            width: 100%;
+        }
+
+        .riga-top {
+            display: flex;
+            width: 100%;
+            align-items: center; /* Centra verticalmente gli elementi */
+            justify-content: center;
+        }
+
+        .border {
+            border: 1px solid #ccc; 
+        }
+
+        .colonna {
+            padding: 10px;
+            border: 1px solid #ccc; /* Solo per visualizzare i bordi delle colonne */
+        }
+
+        .colonna-testo {
+            flex: 0 auto;
+            min-width: 50px;
+            text-align: left;
+            display: flex; /* Abilita Flexbox per la colonna */
+            align-items: center; /* Centra verticalmente gli elementi */
+            justify-content: center;
+        }
+
+        .colonna-input {
+            flex: 1;
+            min-width: 250px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .colonna-input textarea {
+            width: 100%; /* L'input occupa tutta la larghezza della sua colonna */
+            padding: 5px;
+            box-sizing: border-box; /* Assicura che padding e bordi siano inclusi nella larghezza */
+            resize: vertical;
+        }
+
+        .colonna-icona {
+            flex: 0 auto;
+            width: 50px;
+            display: flex;
+            justify-content: center; /* Centra l'icona orizzontalmente */
+            align-items: center; /* Centra l'icona verticalmente */
+        }
+
+        .colonna-btn {
+            flex: 1;
+            display: flex;
+            justify-content: center; /* Centra l'icona orizzontalmente */
+            align-items: center; /* Centra l'icona verticalmente */
+        }
+
+        svg {
+            width: 24px;
+            height: 24px;
+        }
+
+        .btn-save{
+            padding: 20px 30px;
+            margin: 35px;
+            max-width: 350px;
+            font-weight: bold;
+            font-size: 18px;
+        }
+
+    </style>
+</head>
+<body>
+
+    
+
+    <div class="main-container">
+        <div class="container">
+            <div class="riga-top" style="margin-bottom: 30px;">
+                <h2>VERIFICA METADATI PDF</h2>
+            </div>
+            <div class="riga-top border" style="margin-bottom: 30px;">
+                <div class="colonna-testo" style="font-weight: bold; padding:10px;">
+                    <p>CARICA PDF</p>
+                </div>
+                <div class="">
+                    <input id="fileUploader" type="file" accept=".pdf" autocomplete="off">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="main-container">
+        <div class="container">
+
+            <div class="riga">
+                <div class="colonna colonna-testo" style="font-weight: bold;">
+                    CAMPO
+                </div>
+                <div class="colonna colonna-input" style="font-weight: bold;">
+                    VALORE
+                </div>
+                <div class="colonna colonna-icona" style="font-weight: bold;">
+                    VERIFICA
+                </div>
+            </div>
+            <div class="riga">
+                <div class="colonna colonna-testo">
+                    Titolo:
+                </div>
+                <div class="colonna colonna-input">
+                    <textarea name="titolo" id="titolo" autocomplete="off" disabled></textarea>
+                </div>
+                <div class="colonna colonna-icona">
+                    <span class="icon"><svg><use id="check-titolo" /></svg></span>
+                </div>
+            </div>
+            <div class="riga">
+                <div class="colonna colonna-testo">
+                    Oggetto:
+                </div>
+                <div class="colonna colonna-input">
+                    <textarea name="oggetto" id="oggetto" autocomplete="off" disabled></textarea>
+                </div>
+                <div class="colonna colonna-icona">
+                    <span class="icon"><svg><use id="check-oggetto" /></svg></span>
+                </div>
+            </div>
+            <div class="riga">
+                <div class="colonna colonna-testo">
+                    Tag:
+                </div>
+                <div class="colonna colonna-input">
+                    <textarea name="tags" id="tags" autocomplete="off" disabled></textarea>
+                </div>
+                <div class="colonna colonna-icona">
+                    <span class="icon"><svg><use id="check-tags" /></svg></span>
+                </div>
+            </div>
+            <div class="riga">
+                <div class="colonna colonna-testo">
+                    Autore:
+                </div>
+                <div class="colonna colonna-input">
+                    <textarea name="autore" id="autore" autocomplete="off" disabled></textarea>
+                </div>
+                <div class="colonna colonna-icona">
+                    <span class="icon"><svg><use id="check-autore" /></svg></span>
+                </div>
+            </div>
+            <div class="riga">
+                <div class="colonna colonna-testo">
+                    PDF/A:
+                </div>
+                <div class="colonna colonna-input">
+                    <p id="pdfa"></p>
+                </div>
+                <div class="colonna colonna-icona">
+                    <span class="icon"><svg><use id="check-pdfa" /></svg></span>
+                </div>
+            </div>
+            <div class="riga">
+                <div class="colonna colonna-testo">
+                    Firme:
+                </div>
+                <div class="colonna colonna-input">
+                    <p id="firme"></p>
+                </div>
+                <div class="colonna colonna-icona">
+                    <span class="icon"><svg><use id="check-firme" /></svg></span>
+                </div>
+            </div>
+
+            <div class="riga">
+                <div class="colonna-btn">
+                    <button id="btn-save" class="btn-save">SCARICA PDF</button>
+                </div>
+            </div>
+
+        </div>
+        <div class="container">
+            <div class="riga">
+                <div class="colonna" style="font-weight: bold;">
+                    PREVIEW DOCUMENTO
+                </div>
+            </div>
+            <div class="riga">
+                <div id="div_icona_pdf" class="colonna colonna-icona">
+                    <span class="icon"><svg><use href="#s_pdf" /></svg></span>
+                </div>
+                <div class="colonna">
+                    <canvas id="the-canvas"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+
+<script>
+    const { PDFDocument, PDFHexString, PDFName, PDFString, PDFDict, PDFRef, PDFSignature, PDFBool, PDFImage, PDFFont} = PDFLib
+
+    PDFDocument.prototype.updateInfoDict = function () {
+
+    }
+
+    function dec2hex (dec) {
+        return dec.toString(16).padStart(2, "0")
+    }
+
+    function XMP_encode(string)
+    {
+        const encoder = new TextEncoder('ascii')
+        const decoder = new TextDecoder("ascii")
+        const encoded_XML = encoder.encode(string)
+        return decoder.decode(encoded_XML)
+    }
+
+    async function downloadPDF() {
+        const doc = await PDFDocument.create()
+
+        const docForm = loaded_pdf.getForm()
+        const docFormFields = docForm.getFields()
+        if (docFormFields.length > 0) {
+            for (const field of docFormFields) {
+                if (field instanceof PDFSignature) docForm.removeField(field)
+            }
+        }
+
+        const entries = loaded_pdf.context.indirectObjects.entries()
+        for (const e of entries) {
+            if(e[1].dict instanceof PDFDict) {
+                if(e[1].dict.get(PDFName.of('Interpolate')) !== undefined) e[1].dict.set(PDFName.of('Interpolate'), PDFBool.False)
+            }
+        }
+
+        const copiedPages = await doc.copyPages(loaded_pdf, loaded_pdf.getPageIndices())
+        copiedPages.forEach((page) => {
+            page.setTrimBox(0, 0, page.getWidth(), page.getHeight())
+            doc.addPage(page)
+        })
+
+        doc.setTitle(document.getElementById('titolo').value)
+        doc.setAuthor(document.getElementById('autore').value)
+        doc.setSubject(document.getElementById('oggetto').value)
+        doc.setKeywords([document.getElementById('tags').value])
+
+        //doc.setProducer(pdfDoc.getProducer())
+        //doc.setCreator(pdfDoc.getCreator())
+        doc.setProducer("Regione Puglia")
+        doc.setCreator("Regione Puglia")
+        if (loaded_pdf.getCreationDate() !== undefined) doc.setCreationDate(loaded_pdf.getCreationDate())
+            else doc.setCreationDate(new Date())
+        if (loaded_pdf.getModificationDate() !== undefined) doc.setModificationDate(loaded_pdf.getModificationDate())
+            else doc.setModificationDate(new Date())
+
+        const random_array = new Uint8Array(16)
+        const random_values = crypto.getRandomValues(random_array)
+        const documentId = Array.from(random_values, dec2hex).join('')
+        const id = PDFHexString.of(documentId)
+        doc.context.trailerInfo.ID = doc.context.obj([id, id])
+
+        const binaryString = atob(icc)
+        var bytes = new Uint8Array(binaryString.length)
+        for (var i = 0; i < binaryString.length; i++) {
+            bytes[i] = binaryString.charCodeAt(i)
+        }
+
+        const iccStream = doc.context.stream(bytes, {
+            Length: binaryString.length,
+            N: 3,
+        })
+        const outputIntent = doc.context.obj({
+            Type: "OutputIntent",
+            S: "GTS_PDFA1",
+            OutputConditionIdentifier: PDFString.of("sRGB"),
+            OutputCondition: PDFString.of("IEC 61966-2-1:1999"),
+            DestOutputProfile: doc.context.register(iccStream),
+            RegistryName: PDFString.of("http://www.color.org"),
+            Info: PDFString.of("sRGB2014 (v2)"),
+        })
+        const outputIntentRef = doc.context.register(outputIntent)
+        doc.catalog.set(PDFName.of("OutputIntents"), doc.context.obj([outputIntentRef]))
+
+        let crd = new Date(doc.getCreationDate())
+        crd = crd.getFullYear() + "-" + (crd.getMonth() + 1).toString().padStart(2, "0") + "-" + crd.getDate().toString().padStart(2, "0") + "T" + crd.getHours().toString().padStart(2, "0") + ":" + crd.getMinutes().toString().padStart(2, "0") + ":" + crd.getSeconds().toString().padStart(2, "0") + "+" + Math.abs((crd.getTimezoneOffset() / 60)).toString().padStart(2, "0") + ":00"
+        let mdd = new Date(doc.getModificationDate())
+        mdd = mdd.getFullYear() + "-" + (mdd.getMonth() + 1).toString().padStart(2, "0") + "-" + mdd.getDate().toString().padStart(2, "0") + "T" + mdd.getHours().toString().padStart(2, "0") + ":" + mdd.getMinutes().toString().padStart(2, "0") + ":" + mdd.getSeconds().toString().padStart(2, "0") + "+" + Math.abs((mdd.getTimezoneOffset() / 60)).toString().padStart(2, "0") + ":00" 
+
+        const metadataXML = `<?xpacket begin="ï»¿" id="W5M0MpCehiHzreSzNTczkc9d"?>
+        <x:xmpmeta xmlns:x="adobe:ns:meta/" x:xmptk="Adobe XMP Core 5.2-c001 63.139439, 2010/09/27-13:37:26">
+        <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+
+        <rdf:Description rdf:about="" xmlns:dc="http://purl.org/dc/elements/1.1/">
+        <dc:format>application/pdf</dc:format>
+        <dc:creator>
+        <rdf:Seq>
+        <rdf:li>${XMP_encode(doc.getAuthor())}</rdf:li>
+        </rdf:Seq>
+        </dc:creator>
+        <dc:title>
+        <rdf:Alt>
+        <rdf:li xml:lang="x-default">${XMP_encode(doc.getTitle())}</rdf:li>
+        </rdf:Alt>
+        </dc:title>
+        </rdf:Description>
+
+        <rdf:Description rdf:about="" xmlns:xmp="http://ns.adobe.com/xap/1.0/">
+        <xmp:CreatorTool>Regione Puglia</xmp:CreatorTool>
+        <xmp:CreateDate>${crd}</xmp:CreateDate>
+        <xmp:ModifyDate>${mdd}</xmp:ModifyDate>
+        <xmp:MetadataDate>${mdd}</xmp:MetadataDate>
+        </rdf:Description>
+
+        <rdf:Description rdf:about="" xmlns:pdf="http://ns.adobe.com/pdf/1.3/">
+        <pdf:Producer>Regione Puglia</pdf:Producer>
+        </rdf:Description>
+
+        <rdf:Description rdf:about="" xmlns:pdfaid="http://www.aiim.org/pdfa/ns/id/">
+        <pdfaid:part>3</pdfaid:part>
+        <pdfaid:conformance>B</pdfaid:conformance>
+        </rdf:Description>
+        </rdf:RDF>
+        </x:xmpmeta>
+        <?xpacket end="w"?>`.trim()
+
+
+        const metadataStream = doc.context.stream(metadataXML, {
+            Type: "Metadata",
+            Subtype: "XML",
+            Length: metadataXML.length,
+        })
+        const metadataStreamRef = doc.context.register(metadataStream)
+        doc.catalog.set(PDFName.of("Metadata"), metadataStreamRef)
+
+        
+        doc.context.enumerateIndirectObjects().forEach(([ref, obj]) => {
+            if (obj instanceof PDFDict) {
+                const fontEntry = Array.from(obj.entries()).find(([key, value]) => value.toString().includes("Font"))
+                if (fontEntry) {
+                    obj.set(PDFName.of("CIDToGIDMap"), PDFName.of("Identity"))
+                }
+            }
+        })
+
+        const pdfBytes = await doc.save()
+        var filename = document.getElementById("fileUploader").files[0].name
+        filename = filename.slice(0, -4)+"_metadati.pdf"
+        download(pdfBytes, filename, "application/pdf")
+    }
+
+    window.onload = function() {
+        const colonne = document.querySelectorAll('.colonna-testo, .colonna-icona')
+        const array_lunghezze = Array.from(colonne, (x) => x.offsetWidth)
+        const larghezzaMassima = Math.max(...array_lunghezze)
+        colonne.forEach(colonna => {
+            colonna.style.width = `${larghezzaMassima}px`
+            colonna.style.minWidth = `${larghezzaMassima}px`
+        })
+    }
+
+    function autoresize(textarea) {
+        textarea.style.height = '0px'     //Reset height, so that it not only grows but also shrinks
+        textarea.style.height = (textarea.scrollHeight+10) + 'px'    //Set new height
+    }
+
+    function setGreenCheck(elem) {
+        elem.setAttribute("href","#check")
+        elem.style.fill = "#40b0a6"
+    }
+    function setRedMark(elem) {
+        elem.setAttribute("href","#xmark")
+        elem.style.fill = "#dc3220"
+    }
+    function setWarning(elem) {
+        elem.setAttribute("href","#warning")
+        elem.style.fill = "#ffcc00"
+    }
+
+    let loaded_pdf
+
+    document.getElementById('btn-save').addEventListener('click', () => {
+        if (loaded_pdf !== undefined) downloadPDF(loaded_pdf)
+    })
+
+    document.getElementById("titolo").addEventListener('input', () => {
+        if (document.getElementById("titolo").value.length === 0) setRedMark(document.getElementById("check-titolo"))
+        else setGreenCheck(document.getElementById("check-titolo"))
+    })
+    document.getElementById("oggetto").addEventListener('input', () => {
+        if (document.getElementById("oggetto").value.length === 0) setRedMark(document.getElementById("check-oggetto"))
+        else setGreenCheck(document.getElementById("check-oggetto"))
+    })
+    document.getElementById("tags").addEventListener('input', () => {
+        if (document.getElementById("tags").value.length === 0) setRedMark(document.getElementById("check-tags"))
+        else setGreenCheck(document.getElementById("check-tags"))
+    })
+    document.getElementById("autore").addEventListener('input', () => {
+        if (document.getElementById("autore").value.length === 0) setRedMark(document.getElementById("check-autore"))
+        else setGreenCheck(document.getElementById("check-autore"))
+    })
+
+    document.getElementById('fileUploader').addEventListener('change', ({target}) => {
+        pdfjsLib.GlobalWorkerOptions.workerSrc = `https://cdn.jsdelivr.net/npm/pdfjs-dist@${pdfjsLib.version}/build/pdf.worker.mjs`
+        const reader = new FileReader()
+        reader.addEventListener('load', async () => {
+            const buffer = reader.result
+            const pdf_data = new Uint8Array(buffer)
+
+            loaded_pdf = await PDFDocument.load(pdf_data)
+            const titolo = loaded_pdf.getTitle()
+            const oggetto = loaded_pdf.getSubject()
+            const tags = loaded_pdf.getKeywords()
+            const autore = loaded_pdf.getAuthor()
+
+            document.getElementById('titolo').disabled = false
+            document.getElementById('oggetto').disabled = false
+            document.getElementById('tags').disabled = false
+            document.getElementById('autore').disabled = false
+            document.getElementById('titolo').value = ""
+            document.getElementById('oggetto').value = ""
+            document.getElementById('tags').value = ""
+            document.getElementById('autore').value = ""
+            document.getElementById('pdfa').innerText = "No"
+            document.getElementById('firme').innerHTML = "Nessuna"
+            setRedMark(document.getElementById('check-titolo'))
+            setRedMark(document.getElementById('check-oggetto'))
+            setRedMark(document.getElementById('check-tags'))
+            setRedMark(document.getElementById('check-autore'))
+            setRedMark(document.getElementById('check-pdfa'))
+            setGreenCheck(document.getElementById('check-firme'))
+
+            if (titolo !== undefined && titolo !== "") {
+                document.getElementById('titolo').value = titolo
+                setGreenCheck(document.getElementById('check-titolo'))
+            }
+            if (oggetto !== undefined && oggetto !== "") {
+                document.getElementById('oggetto').value = oggetto
+                setGreenCheck(document.getElementById('check-oggetto'))
+            }
+            if (tags !== undefined && tags !== "") {
+                document.getElementById('tags').value = tags
+                setGreenCheck(document.getElementById('check-tags'))
+            }
+            if (autore !== undefined && autore !== "") {
+                document.getElementById('autore').value = autore
+                setGreenCheck(document.getElementById('check-autore'))
+            }
+            const pdfa = checkPDFA()
+            if (pdfa !== undefined && pdfa.isPDFA) {
+                document.getElementById('pdfa').innerText = pdfa.version
+                setGreenCheck(document.getElementById('check-pdfa'))
+            }
+            const firme = hasDigitalSignatures()
+            if (firme !== undefined && firme.hasSignatures) {
+                document.getElementById('firme').innerHTML = firme.fieldNames.join('<br />')
+                setWarning(document.getElementById('check-firme'))
+            }
+
+            autoresize(document.getElementById('titolo'))
+            autoresize(document.getElementById('oggetto'))
+            autoresize(document.getElementById('tags'))
+            autoresize(document.getElementById('autore'))
+
+            const pdf = pdfjsLib.getDocument({ data: pdf_data }).promise.then( (pdf) => {
+                document.getElementById('div_icona_pdf').style.display = "none"
+                pdf.getPage(1).then(function(page) {
+                    var scale = 0.85
+                    var viewport = page.getViewport({ scale: scale, })
+                    var outputScale = window.devicePixelRatio || 1
+
+                    var canvas = document.getElementById('the-canvas')
+                    var context = canvas.getContext('2d')
+
+                    canvas.width = Math.floor(viewport.width * outputScale)
+                    canvas.height = Math.floor(viewport.height * outputScale)
+                    canvas.style.width = Math.floor(viewport.width) + "px"
+                    canvas.style.height =  Math.floor(viewport.height) + "px"
+
+                    var transform = outputScale !== 1 ? [outputScale, 0, 0, outputScale, 0, 0] : null
+
+                    var renderContext = {
+                        canvasContext: context,
+                        transform: transform,
+                        viewport: viewport
+                    }
+                    page.render(renderContext)
+                }) 
+            })
+        })
+        reader.readAsArrayBuffer(target.files[0])
+    })
+
+
+    function hasDigitalSignatures() {
+        try {
+            let hasSignatures = false
+            let signatureFieldsCount = 0
+            const signatureFieldNames = []
+
+            const acroFormRef = loaded_pdf.catalog.get(PDFName.of('AcroForm'))
+            const acroForm = loaded_pdf.context.lookup(acroFormRef)
+            if (acroForm && acroForm.has(PDFName.of('Fields'))) {
+                const fieldsRef = acroForm.get(PDFName.of('Fields'))
+                const fieldsArray = loaded_pdf.context.lookup(fieldsRef)
+
+                if (fieldsArray && fieldsArray.array) {
+                    for (const fieldRef of fieldsArray.array) {
+                        if (fieldRef instanceof PDFRef) {
+                            const fieldDict = loaded_pdf.context.lookup(fieldRef)
+                            const fieldType = fieldDict.get(PDFName.of('FT'))
+                            if (fieldType && fieldType === PDFName.of('Sig')) {
+                                hasSignatures = true
+                                signatureFieldsCount++
+
+                                const fieldSignRef = fieldDict.get(PDFName.of('V'))
+                                const fieldSignDict = loaded_pdf.context.lookup(fieldSignRef)
+                                const name = fieldSignDict.get(PDFName.of('Name')).decodeText()
+                                signatureFieldNames.push(name)
+                            }
+                        }
+                    }
+                }
+            }
+
+            if (hasSignatures) {
+                console.log(`Il PDF contiene firme digitali`)
+                console.log(`Numero di firme trovate: ${signatureFieldsCount}`)
+                if (signatureFieldNames.length > 0) {
+                    console.log(`Nominativi delle firme: ${signatureFieldNames.join(', ')}`)
+                }
+                return { hasSignatures: true, count: signatureFieldsCount, fieldNames: signatureFieldNames }
+            } else {
+                console.log('Il PDF non contiene firme digitali rilevabili.')
+                return { hasSignatures: false, count: 0, fieldNames: [] }
+            }
+
+        } catch (error) {
+            console.error('Errore durante la verifica delle firme:', error)
+            return { hasSignatures: false, error: error.message }
+        }
+    }
+
+    function checkPDFA() {
+        try {
+            let pdfaVersion,pdfaidPart,pdfaidConformance
+            pdfaVersion = pdfaidPart = pdfaidConformance = ""
+            const pdfMetadata = loaded_pdf.catalog.get(PDFName.of('Metadata'))
+            const metadataContents = loaded_pdf.context.lookup(pdfMetadata).contents
+            const metadataString = new TextDecoder().decode(metadataContents)
+            const parser = new DOMParser()
+            const doc = parser.parseFromString(metadataString, "application/xml")
+            const pdfaidPartTag = doc.getElementsByTagName("pdfaid:part")
+            const pdfaidConformanceTag = doc.getElementsByTagName("pdfaid:conformance")
+            if (pdfaidPartTag.length > 0 && pdfaidConformanceTag.length > 0) {
+                pdfaidPart = pdfaidPartTag[0].textContent
+                pdfaidConformance = pdfaidConformanceTag[0].textContent
+                pdfaVersion = `PDF/A-${pdfaidPart}${pdfaidConformance}`
+                console.log(`Il PDF sembra essere conforme allo standard: ${pdfaVersion}`)
+                return { isPDFA: true, version: pdfaVersion}
+            }
+            console.log(`Il PDF non sembra essere conforme allo standard PDF/A`)
+            return { isPDFA: false, version: pdfaVersion}
+        } catch (error) {
+            console.error('Errore durante la verifica della versione PDF/A:', error)
+            return { isPDFA: false, version: pdfaVersion}
+        }
+
+    }
+
+    const icc = "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"
+
+</script>
+</html>
