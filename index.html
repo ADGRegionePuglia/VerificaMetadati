@@ -598,18 +598,20 @@
             let pdfaVersion,pdfaidPart,pdfaidConformance
             pdfaVersion = pdfaidPart = pdfaidConformance = ""
             const pdfMetadata = loaded_pdf.catalog.get(PDFName.of('Metadata'))
-            const metadataContents = loaded_pdf.context.lookup(pdfMetadata).contents
-            const metadataString = new TextDecoder().decode(metadataContents)
-            const parser = new DOMParser()
-            const doc = parser.parseFromString(metadataString, "application/xml")
-            const pdfaidPartTag = doc.getElementsByTagName("pdfaid:part")
-            const pdfaidConformanceTag = doc.getElementsByTagName("pdfaid:conformance")
-            if (pdfaidPartTag.length > 0 && pdfaidConformanceTag.length > 0) {
-                pdfaidPart = pdfaidPartTag[0].textContent
-                pdfaidConformance = pdfaidConformanceTag[0].textContent
-                pdfaVersion = `PDF/A-${pdfaidPart}${pdfaidConformance}`
-                console.log(`Il PDF sembra essere conforme allo standard: ${pdfaVersion}`)
-                return { isPDFA: true, version: pdfaVersion}
+            if (pdfMetadata) {
+                const metadataContents = loaded_pdf.context.lookup(pdfMetadata).contents
+                const metadataString = new TextDecoder().decode(metadataContents)
+                const parser = new DOMParser()
+                const doc = parser.parseFromString(metadataString, "application/xml")
+                const pdfaidPartTag = doc.getElementsByTagName("pdfaid:part")
+                const pdfaidConformanceTag = doc.getElementsByTagName("pdfaid:conformance")
+                if (pdfaidPartTag.length > 0 && pdfaidConformanceTag.length > 0) {
+                    pdfaidPart = pdfaidPartTag[0].textContent
+                    pdfaidConformance = pdfaidConformanceTag[0].textContent
+                    pdfaVersion = `PDF/A-${pdfaidPart}${pdfaidConformance}`
+                    console.log(`Il PDF sembra essere conforme allo standard: ${pdfaVersion}`)
+                    return { isPDFA: true, version: pdfaVersion}
+                }
             }
             console.log(`Il PDF non sembra essere conforme allo standard PDF/A`)
             return { isPDFA: false, version: pdfaVersion}
