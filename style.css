@@ -1,0 +1,292 @@
+@import url('https://fonts.googleapis.com/css2?family=Barlow:wght@400;600;700&family=Titillium+Web:wght@300;400&display=swap');
+
+:root {
+  --color-primary: #003a54;
+  --color-text: #000000;
+}
+
+
+
+/* --- Font Families --- */
+body {
+  font-family: 'Titillium Web', sans-serif; /* Font di base per il testo */
+  color: var(--color-text);
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Barlow', sans-serif; /* Font per i titoli */
+  color: var(--color-primary);
+}
+
+/* --- Headings - Titoli di pagina --- */
+
+/* Heading h1 */
+h1 {
+  font-weight: 700; /* Bold */
+  font-size: 24px;
+  line-height: 30px;
+}
+
+/* Heading h2 */
+h2 {
+  font-weight: 600; /* Semibold */
+  font-size: 21px;
+  line-height: 27px;
+}
+
+/* Heading h3 */
+h3 {
+  font-weight: 600; /* Semibold */
+  font-size: 18px;
+  line-height: 24px;
+}
+
+/* Heading h4 */
+h4 {
+  font-weight: 600; /* Semibold */
+  font-size: 16px;
+  line-height: 22px;
+}
+
+/* Heading h5 */
+h5 {
+  font-weight: 600; /* Semibold */
+  font-size: 14px;
+  line-height: 18px;
+}
+
+/* Heading h6 */
+h6 {
+  font-weight: 400; /* Regular */
+  font-size: 14px;
+  line-height: 18px;
+}
+
+/* --- Testo --- */
+
+/* Paragrafo */
+p {
+  font-weight: 400; /* Regular */
+  font-size: 16px;
+  line-height: 24px;
+}
+
+
+/* --- Media Queries per Mobile (ad esempio, max-width: 768px) --- */
+@media (max-width: 768px) {
+  /* Heading h1 Mobile */
+  h1 {
+    font-size: 20px;
+    line-height: 28px;
+  }
+
+  /* Heading h2 Mobile */
+  h2 {
+    font-size: 18px;
+    line-height: 24px;
+  }
+
+  /* Heading h3 Mobile */
+  h3 {
+    font-size: 16px;
+    line-height: 24px;
+  }
+
+  /* Heading h4 Mobile */
+  h4 {
+    font-size: 14px;
+    line-height: 22px;
+  }
+
+  /* Heading h5 Mobile */
+  h5 {
+    font-size: 12px;
+    line-height: 18px;
+  }
+
+  /* Heading h6 Mobile */
+  h6 {
+    font-weight: 600; /* Semibold */
+    font-size: 12px;
+    line-height: 18px;
+  }
+
+  /* Paragrafo Mobile */
+  p {
+    font-size: 16px; /* Immutato rispetto al desktop */
+    line-height: 21px;
+  }
+}
+
+.main-container{
+    display: flex;
+    flex-wrap: wrap-reverse;
+    justify-content: space-evenly;
+    width: 100%;
+
+}
+
+.container {
+    display: flex;
+    flex-direction: column;
+    width: 50%;
+    align-items: center;
+}
+
+.container-l {
+    display: flex;
+    flex-direction: column;
+    width: 40%;
+    align-items: center;
+}
+
+.div-error {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    align-items: center;
+    margin-top: 40px;
+}
+
+.container-r {
+    display: flex;
+    flex-direction: column;
+    width: 35%;
+    align-items: center;
+}
+
+.container-preview {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    align-items: center;
+}
+
+.container-icon{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    padding:15px;
+    text-align: center;
+}
+
+@media (max-width: 1250px) {
+    .container,
+    .container-l,
+    .container-r,
+    .div-error {
+        flex-basis: 100%; /* Make items take up full width on smaller screens */
+        max-width: 100%; /* Ensure they don't exceed 100% */
+        margin: 10px 0; /* Adjust margins for stacking */
+    }
+    .container-preview {
+        flex-basis: 100%; /* Make items take up full width on smaller screens */
+        max-width: 100%; /* Ensure they don't exceed 100% */
+    }
+}
+
+.riga {
+    display: flex;
+    width: 100%;
+}
+
+.riga-top {
+    display: flex;
+    width: 100%;
+    align-items: center; /* Centra verticalmente gli elementi */
+    justify-content: center;
+}
+
+.border-top {
+    border-top: 1px solid #ccc; 
+}
+
+.border {
+    border: 1px solid #ccc;
+    border-bottom: 0px;
+}
+
+.border-fix {
+    border-bottom: 1px solid #ccc !important;
+}
+
+.no-border-top {
+    border-top: 0px !important;
+}
+
+.no-border-right {
+    border-right: 0px !important;
+}
+
+.colonna-testo {
+    flex: 0 auto;
+    min-width: 50px;
+    text-align: left;
+    display: flex; /* Abilita Flexbox per la colonna */
+    flex-direction: column;
+    align-items: center; /* Centra verticalmente gli elementi */
+    justify-content: center;
+    border: 1px solid #ccc;
+    border-bottom: 0px;
+}
+
+.colonna-preview {
+    flex: 0 auto;
+    width: 100%;
+    text-align: center;
+    display: flex; /* Abilita Flexbox per la colonna */
+    flex-direction: column;
+    align-items: center; /* Centra verticalmente gli elementi */
+    justify-content: center;
+    border: 1px solid #ccc;
+    border-bottom: 0px;
+}
+
+.colonna-input {
+    flex: 1;
+    min-width: 250px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid #ccc;
+    border-bottom: 0px;
+}
+
+.colonna-input textarea {
+    width: 100%; /* L'input occupa tutta la larghezza della sua colonna */
+    padding: 5px;
+    box-sizing: border-box; /* Assicura che padding e bordi siano inclusi nella larghezza */
+    resize: none;
+    display: none;
+}
+
+.colonna-icona {
+    flex: 0 auto;
+    width: 50px;
+    display: flex;
+    justify-content: center; /* Centra l'icona orizzontalmente */
+    align-items: center; /* Centra l'icona verticalmente */
+    border: 1px solid #ccc;
+    border-bottom: 0px;
+}
+
+.colonna-btn {
+    flex: 1;
+    display: flex;
+    justify-content: center; /* Centra l'icona orizzontalmente */
+    align-items: center; /* Centra l'icona verticalmente */
+}
+
+svg {
+    width: 24px;
+    height: 24px;
+}
+
+.btn-save{
+    padding: 10px 75px;
+    margin: 20px;
+    max-width: 350px;
+    font-weight: bold;
+    font-size: 18px;
+}
