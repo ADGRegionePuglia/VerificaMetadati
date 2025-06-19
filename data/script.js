@@ -5,7 +5,7 @@ PDFDocument.prototype.updateInfoDict = function () {
 
 }
 
-const worker = new Worker(new URL('./background-worker.js', window.location.href ),{type: 'module'})
+let worker
 
 window.onload = function() {
     const colonne = document.querySelectorAll('.colonna-testo, .colonna-icona')
@@ -100,10 +100,6 @@ document.getElementById("oggetto").addEventListener('input', (value) => {
 document.getElementById("autore").addEventListener('input', (value) => {
     trigger_input("autore")
 })
-document.getElementById("tags").addEventListener('input', (value) => {
-    if (document.getElementById("tags").value.length === 0) setWarning(document.getElementById("check-tags"))
-    else setEmpty(document.getElementById("check-tags"))
-})
 
 function checkAll()
 {
@@ -120,6 +116,33 @@ function checkAll()
     else hideSaveButton()
 }
 
+async function alert_warn() {
+    const pw = document.getElementById("pdfa_warn").getAttribute("flag")
+    const fow = document.getElementById("font_warn").getAttribute("flag")
+    const fw = document.getElementById("firme_warn").getAttribute("flag")
+    let alert_text = ""
+    if(pw==="true") alert_text += "<li>Il file non è nel formato PDF/A.</li><li>Ricordarsi di impostare la spunta per i PDF/A nelle opzioni di Word.</li>"
+    if(fow==="true") alert_text += "<li>Trovati font non inclusi nel PDF, questi font verrano sostituiti durante la conversione.</li><li>Verificare che il file finale non presenti difetti grafici.</li>"
+    if(fw==="true") alert_text += "<li>Le firme digitali verranno rimosse."
+
+    if (alert_text !== "") await Swal.fire({
+                title: 'Avviso',
+                html: "<ul style=\"text-align:left\">" + alert_text + "</ul>",
+                icon: 'warning',
+                confirmButtonText: 'OK',
+                backdrop: true,
+                allowOutsideClick: true,
+                allowEscapeKey: true,
+                customClass: {
+                    container: 'my-swal-container',
+                    popup: 'my-swal-popup',
+                    header: 'my-swal-header',
+                    title: 'my-swal-title',
+                    content: 'my-swal-content',
+                    confirmButton: 'my-swal-confirm-button'
+                }
+    })
+}
 
 async function downloadPDF() {
     const blob64 = await setMetadata()
@@ -129,9 +152,19 @@ async function downloadPDF() {
     const blob = new Blob([pdfBytes], {type: "application/pdf"})
     const url = window.URL.createObjectURL(blob)
     const dataObject = {psDataURL: url, pdfmark:blob64}
-    worker.postMessage({ data: dataObject, target: 'wasm'})
+    await alert_warn()
+    await worker.postMessage({ data: dataObject, target: 'wasm'})
     return new Promise((resolve, reject)=>{
         const listener = (e) => {
+            Swal.fire({
+                title: 'Elaborazione in corso',
+                allowOutsideClick: false,
+                allowEscapeKey: false,
+                showConfirmButton: false,
+                didOpen: () => {
+                    Swal.showLoading()
+                }
+            })
             resolve(e.data)
             const xhr = new XMLHttpRequest()
             xhr.open("GET", e.data)
@@ -140,7 +173,11 @@ async function downloadPDF() {
                 window.URL.revokeObjectURL(e.data)
                 const blob = new Blob([xhr.response], {type: "application/pdf"})
                 download(blob, filename, "application/pdf")
+                const pdfURL = window.URL.createObjectURL(blob);
+                const size = xhr.response.byteLength;
+                resolve({pdfURL, size});
             }
+            Swal.close();
             xhr.send()
             worker.removeEventListener('message', listener)
             setTimeout(()=> worker.terminate(), 0)
@@ -149,8 +186,8 @@ async function downloadPDF() {
     })
 }
 
-document.getElementById('btn-save').addEventListener('click', () => {
-    if (loaded_pdf !== undefined) downloadPDF()
+document.getElementById('btn-save').addEventListener('click', async () => {
+    if (loaded_pdf !== undefined) await downloadPDF()
 })
 
 let loaded_pdf
@@ -159,6 +196,7 @@ document.getElementById('fileUploader').addEventListener('change', ({target}) =>
     pdfjsLib.GlobalWorkerOptions.workerSrc = `https://cdn.jsdelivr.net/npm/pdfjs-dist@${pdfjsLib.version}/build/pdf.worker.mjs`
     const reader = new FileReader()
     reader.addEventListener('load', async () => {
+        worker = new Worker(new URL('./background-worker.js', window.location.href ),{type: 'module'})
         const buffer = reader.result
         const pdf_data = new Uint8Array(buffer)
 
@@ -171,11 +209,9 @@ document.getElementById('fileUploader').addEventListener('change', ({target}) =>
 
         document.getElementById('titolo').disabled = false
         document.getElementById('oggetto').disabled = false
-        document.getElementById('tags').disabled = false
         document.getElementById('autore').disabled = false
         document.getElementById('titolo').value = ""
         document.getElementById('oggetto').value = ""
-        document.getElementById('tags').value = ""
         document.getElementById('autore').value = ""
         document.getElementById('pdfa').innerText = "No"
         document.getElementById('firme').innerHTML = "Nessuna"
@@ -183,7 +219,6 @@ document.getElementById('fileUploader').addEventListener('change', ({target}) =>
         document.getElementById('autore').value = ""
         setRedMark(document.getElementById('check-titolo'))
         setRedMark(document.getElementById('check-oggetto'))
-        setWarning(document.getElementById('check-tags'))
         setRedMark(document.getElementById('check-autore'))
         setRedMark(document.getElementById('check-pdfa'))
         setEmpty(document.getElementById('check-firme'))
@@ -206,10 +241,6 @@ document.getElementById('fileUploader').addEventListener('change', ({target}) =>
         if (oggetto !== undefined && oggetto !== "") {
             document.getElementById('oggetto').value = oggetto
             setGreenCheck(document.getElementById('check-oggetto'))
-        }
-        if (tags !== undefined && tags !== "") {
-            document.getElementById('tags').value = tags
-            setGreenCheck(document.getElementById('check-tags'))
         }
         if (autore !== undefined && autore !== "") {
             document.getElementById('autore').value = autore
@@ -240,11 +271,9 @@ document.getElementById('fileUploader').addEventListener('change', ({target}) =>
 
         autoresize(document.getElementById('titolo'))
         autoresize(document.getElementById('oggetto'))
-        autoresize(document.getElementById('tags'))
         autoresize(document.getElementById('autore'))
         document.getElementById('titolo').style.height = document.getElementById('titolo').parentElement.clientHeight + 'px'
         document.getElementById('oggetto').style.height = document.getElementById('oggetto').parentElement.clientHeight + 'px'
-        document.getElementById('tags').style.height = document.getElementById('tags').parentElement.clientHeight + 'px'
         document.getElementById('autore').style.height = document.getElementById('autore').parentElement.clientHeight + 'px'
         document.getElementById('canvas-div').style.display = "block"
 
@@ -278,6 +307,10 @@ document.getElementById('fileUploader').addEventListener('change', ({target}) =>
                 page.render(renderContext)
             }) 
         })
+        document.getElementById("anchor").scrollIntoView({
+            behavior: 'smooth'
+        });
+
     })
     reader.readAsArrayBuffer(target.files[0])
 })
@@ -454,7 +487,6 @@ async function setMetadata() {
     loaded_pdf.setTitle(document.getElementById('titolo').value)
     loaded_pdf.setAuthor(document.getElementById('autore').value)
     loaded_pdf.setSubject(document.getElementById('oggetto').value)
-    loaded_pdf.setKeywords([document.getElementById('tags').value])
     loaded_pdf.setProducer("Regione Puglia")
     loaded_pdf.setCreator("Regione Puglia")
     if (loaded_pdf.getCreationDate() !== undefined) loaded_pdf.setCreationDate(new Date())
@@ -463,7 +495,7 @@ async function setMetadata() {
     const pdfmark = `[ /Title (${document.getElementById('titolo').value})
     /Author (${document.getElementById('autore').value})
     /Subject (${document.getElementById('oggetto').value})
-    /Keywords (${document.getElementById('tags').value})
+    /Keywords (${loaded_pdf.getKeywords()})
     /Creator (Regione Puglia)
     /Producer (Regione Puglia - GPL Ghostscript 9.26)
     /DOCINFO pdfmark`

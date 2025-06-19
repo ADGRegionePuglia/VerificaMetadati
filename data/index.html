@@ -4,6 +4,8 @@
     <meta charset="utf-8">
     <title>Verifica Medatati PDF</title>
     <script type="module"> import pdfjsDist from 'https://cdn.jsdelivr.net/npm/pdfjs-dist@5.2.133/+esm' </script>
+    <link rel="stylesheet" href="https://unpkg.com/sweetalert2@11/dist/sweetalert2.min.css">
+    <script src="https://unpkg.com/sweetalert2@11/dist/sweetalert2.min.js"></script>
     <script src="https://unpkg.com/pdf-lib@1.17.1"></script>
     <script src="https://unpkg.com/downloadjs@1.4.7"></script>
     <link rel="icon" type="image/svg+xml" href="public/pdf-file.svg" />
@@ -46,7 +48,7 @@
                     <p>Questo strumento verifica che i PDF rispettino le linee guida ed inoltre rende possibile la modifica diretta dei metadati e la conversione in formato PDF/A.</p>
               </span>
             </div>
-            <div class="riga-top border border-fix" style="margin-bottom: 30px;text-align: center;">
+            <div id="anchor" class="riga-top border border-fix" style="margin-bottom: 30px;text-align: center;">
                 <h3>SCEGLI FILE PDF</h3>
                 <input id="fileUploader" type="file" accept=".pdf" autocomplete="off" style="margin-left: 15px;">
             </div>
@@ -86,18 +88,6 @@
                 </div>
                 <div class="colonna-icona">
                     <svg><use id="check-oggetto" /></svg>
-                </div>
-            </div>
-            <div class="riga">
-                <div class="colonna-testo no-border-right">
-                  <h5 style="margin-bottom:0px">Tag:</h5>
-                  <h6 style="margin-top: 0px">(Facoltativi)</h6>
-                </div>
-                <div class="colonna-input no-border-right">
-                    <textarea name="tags" id="tags" autocomplete="off" disabled></textarea>
-                </div>
-                <div class="colonna-icona">
-                    <svg><use id="check-tags" /></svg>
                 </div>
             </div>
             <div class="riga">

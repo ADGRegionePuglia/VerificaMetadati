@@ -5,115 +5,92 @@
   --color-text: #000000;
 }
 
-
-
-/* --- Font Families --- */
 body {
-  font-family: 'Titillium Web', sans-serif; /* Font di base per il testo */
+  font-family: 'Titillium Web', sans-serif;
   color: var(--color-text);
 }
 
 h1, h2, h3, h4, h5, h6 {
-  font-family: 'Barlow', sans-serif; /* Font per i titoli */
+  font-family: 'Barlow', sans-serif;
   color: var(--color-primary);
 }
 
-/* --- Headings - Titoli di pagina --- */
-
-/* Heading h1 */
 h1 {
-  font-weight: 700; /* Bold */
+  font-weight: 700;
   font-size: 24px;
   line-height: 30px;
 }
 
-/* Heading h2 */
 h2 {
-  font-weight: 600; /* Semibold */
+  font-weight: 600;
   font-size: 21px;
   line-height: 27px;
 }
 
-/* Heading h3 */
 h3 {
-  font-weight: 600; /* Semibold */
+  font-weight: 600;
   font-size: 18px;
   line-height: 24px;
 }
 
-/* Heading h4 */
 h4 {
-  font-weight: 600; /* Semibold */
+  font-weight: 600;
   font-size: 16px;
   line-height: 22px;
 }
 
-/* Heading h5 */
 h5 {
-  font-weight: 600; /* Semibold */
+  font-weight: 600;
   font-size: 14px;
   line-height: 18px;
 }
 
-/* Heading h6 */
 h6 {
-  font-weight: 400; /* Regular */
+  font-weight: 400;
   font-size: 14px;
   line-height: 18px;
 }
 
-/* --- Testo --- */
-
-/* Paragrafo */
 p {
-  font-weight: 400; /* Regular */
+  font-weight: 400;
   font-size: 16px;
   line-height: 24px;
 }
 
-
-/* --- Media Queries per Mobile (ad esempio, max-width: 768px) --- */
 @media (max-width: 768px) {
-  /* Heading h1 Mobile */
   h1 {
     font-size: 20px;
     line-height: 28px;
   }
 
-  /* Heading h2 Mobile */
   h2 {
     font-size: 18px;
     line-height: 24px;
   }
 
-  /* Heading h3 Mobile */
   h3 {
     font-size: 16px;
     line-height: 24px;
   }
 
-  /* Heading h4 Mobile */
   h4 {
     font-size: 14px;
     line-height: 22px;
   }
 
-  /* Heading h5 Mobile */
   h5 {
     font-size: 12px;
     line-height: 18px;
   }
 
-  /* Heading h6 Mobile */
   h6 {
-    font-weight: 600; /* Semibold */
+    font-weight: 600;
     font-size: 12px;
     line-height: 18px;
   }
 
-  /* Paragrafo Mobile */
   p {
-    font-size: 16px; /* Immutato rispetto al desktop */
+    font-size: 16px;
     line-height: 21px;
   }
 }
@@ -176,13 +153,13 @@ p {
     .container-l,
     .container-r,
     .div-error {
-        flex-basis: 100%; /* Make items take up full width on smaller screens */
-        max-width: 100%; /* Ensure they don't exceed 100% */
-        margin: 10px 0; /* Adjust margins for stacking */
+        flex-basis: 100%;
+        max-width: 100%;
+        margin: 10px 0;
     }
     .container-preview {
-        flex-basis: 100%; /* Make items take up full width on smaller screens */
-        max-width: 100%; /* Ensure they don't exceed 100% */
+        flex-basis: 100%;
+        max-width: 100%;
     }
 }
 
@@ -194,7 +171,7 @@ p {
 .riga-top {
     display: flex;
     width: 100%;
-    align-items: center; /* Centra verticalmente gli elementi */
+    align-items: center;
     justify-content: center;
 }
 
@@ -223,21 +200,22 @@ p {
     flex: 0 auto;
     min-width: 50px;
     text-align: left;
-    display: flex; /* Abilita Flexbox per la colonna */
+    display: flex;
     flex-direction: column;
-    align-items: center; /* Centra verticalmente gli elementi */
+    align-items: center;
     justify-content: center;
     border: 1px solid #ccc;
     border-bottom: 0px;
+    padding: 0px 5px;
 }
 
 .colonna-preview {
     flex: 0 auto;
     width: 100%;
     text-align: center;
-    display: flex; /* Abilita Flexbox per la colonna */
+    display: flex;
     flex-direction: column;
-    align-items: center; /* Centra verticalmente gli elementi */
+    align-items: center;
     justify-content: center;
     border: 1px solid #ccc;
     border-bottom: 0px;
@@ -254,9 +232,9 @@ p {
 }
 
 .colonna-input textarea {
-    width: 100%; /* L'input occupa tutta la larghezza della sua colonna */
+    width: 100%;
     padding: 5px;
-    box-sizing: border-box; /* Assicura che padding e bordi siano inclusi nella larghezza */
+    box-sizing: border-box;
     resize: none;
     display: none;
 }
@@ -265,17 +243,18 @@ p {
     flex: 0 auto;
     width: 50px;
     display: flex;
-    justify-content: center; /* Centra l'icona orizzontalmente */
-    align-items: center; /* Centra l'icona verticalmente */
+    justify-content: center;
+    align-items: center;
     border: 1px solid #ccc;
     border-bottom: 0px;
+    padding: 0px 5px;
 }
 
 .colonna-btn {
     flex: 1;
     display: flex;
-    justify-content: center; /* Centra l'icona orizzontalmente */
-    align-items: center; /* Centra l'icona verticalmente */
+    justify-content: center;
+    align-items: center;
 }
 
 svg {

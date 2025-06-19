@@ -11,16 +11,11 @@ function _GSPS2PDF(
   dataStruct,
   responseCallback,
 ) {
-  // first download the ps data
   var xhr = new XMLHttpRequest();
   xhr.open("GET", dataStruct.psDataURL);
   xhr.responseType = "arraybuffer";
   xhr.onload = function () {
-    console.log('onload')
-    // release the URL
-    console.log("test")
     self.URL.revokeObjectURL(dataStruct.psDataURL);
-    //set up EMScripten environment
     Module = {
       preRun: [
         function () {
@@ -73,7 +68,6 @@ function _GSPS2PDF(
       totalDependencies: 0,
       noExitRuntime: 1
     };
-    // Module.setStatus("Loading Ghostscript...");
     if (!self.Module) {
       self.Module = Module;
       loadScript();
@@ -90,7 +84,6 @@ function _GSPS2PDF(
 
 self.addEventListener('message', function({data:e}) {
   console.log("message", e)
-  // e.data contains the message sent to the worker.
   if (e.target !== 'wasm'){
     return;
   }
