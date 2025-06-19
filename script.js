@@ -154,17 +154,17 @@ async function downloadPDF() {
     const dataObject = {psDataURL: url, pdfmark:blob64}
     await alert_warn()
     await worker.postMessage({ data: dataObject, target: 'wasm'})
-    return new Promise((resolve, reject)=>{
+    Swal.fire({
+        title: 'Elaborazione in corso',
+        allowOutsideClick: false,
+        allowEscapeKey: false,
+        showConfirmButton: false,
+        didOpen: () => {
+            Swal.showLoading()
+        }
+    })
+    new Promise((resolve, reject)=>{
         const listener = (e) => {
-            Swal.fire({
-                title: 'Elaborazione in corso',
-                allowOutsideClick: false,
-                allowEscapeKey: false,
-                showConfirmButton: false,
-                didOpen: () => {
-                    Swal.showLoading()
-                }
-            })
             resolve(e.data)
             const xhr = new XMLHttpRequest()
             xhr.open("GET", e.data)
@@ -177,13 +177,13 @@ async function downloadPDF() {
                 const size = xhr.response.byteLength;
                 resolve({pdfURL, size});
             }
-            Swal.close();
             xhr.send()
             worker.removeEventListener('message', listener)
             setTimeout(()=> worker.terminate(), 0)
         }
         worker.addEventListener('message', listener)
     })
+    Swal.close();
 }
 
 document.getElementById('btn-save').addEventListener('click', async () => {
