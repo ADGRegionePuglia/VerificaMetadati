@@ -1,4 +1,57 @@
+const dropArea = document.getElementById('drop-area')
+const uploadStatus = document.getElementById('upload-status')
+
+function preventDefaults(e) {
+    e.preventDefault()
+    e.stopPropagation()
+}
+
+function highlight() {
+    dropArea.classList.add('highlight')
+}
+
+function unhighlight() {
+    dropArea.classList.remove('highlight')
+}
+
+function handleDrop(e) {
+    handleFile(e.dataTransfer.files[0])
+}
+
+function handleFile(file) {
+    resetPageState()
+
+    if (file.type !== 'application/pdf') {
+        uploadStatus.textContent = 'File non in formato PDF'
+        uploadStatus.className = 'upload-status error'
+        return
+    }
+
+    processFile(file)
+    uploadStatus.textContent = `File Caricato`
+    uploadStatus.className = 'upload-status'
+}
+
+['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+    dropArea.addEventListener(eventName, preventDefaults, false)
+});
+
+['dragenter', 'dragover'].forEach(eventName => {
+    dropArea.addEventListener(eventName, highlight, false)
+});
+
+['dragleave', 'drop'].forEach(eventName => {
+    dropArea.addEventListener(eventName, unhighlight, false)
+});
+
+dropArea.addEventListener('drop', handleDrop, false)
+
+dropArea.addEventListener('click', () => {
+    document.getElementById("fileUploader").click()
+})
+
 const { PDFDocument, PDFName, PDFDict, PDFRef, PDFSignature} = PDFLib
+pdfjsLib.GlobalWorkerOptions.workerSrc = `https://cdn.jsdelivr.net/npm/pdfjs-dist@${pdfjsLib.version}/build/pdf.worker.mjs`
 
 //Producer Hack
 PDFDocument.prototype.updateInfoDict = function () {
@@ -65,7 +118,7 @@ function error_warn()
     const ow = document.getElementById("oggetto_warn").style.display
     const aw = document.getElementById("autore_warn").style.display
     document.getElementById("error_icon").style.display = "block"
-    if( tw==="none" && ow==="none" && aw==="none") {
+    if(tw==="none" && ow==="none" && aw==="none") {
         document.getElementById("error_icon").style.display = "none"
         warn()
     }
@@ -173,9 +226,9 @@ async function downloadPDF() {
                 window.URL.revokeObjectURL(e.data)
                 const blob = new Blob([xhr.response], {type: "application/pdf"})
                 download(blob, filename, "application/pdf")
-                const pdfURL = window.URL.createObjectURL(blob);
-                const size = xhr.response.byteLength;
-                resolve({pdfURL, size});
+                const pdfURL = window.URL.createObjectURL(blob)
+                const size = xhr.response.byteLength
+                resolve({pdfURL, size})
             }
             xhr.send()
             worker.removeEventListener('message', listener)
@@ -183,56 +236,70 @@ async function downloadPDF() {
         }
         worker.addEventListener('message', listener)
     })
-    Swal.close();
+    Swal.close()
 }
 
 document.getElementById('btn-save').addEventListener('click', async () => {
     if (loaded_pdf !== undefined) await downloadPDF()
 })
 
+function resetPageState()
+{
+    document.getElementById('titolo').disabled = false
+    document.getElementById('oggetto').disabled = false
+    document.getElementById('autore').disabled = false
+    document.getElementById('titolo').value = ""
+    document.getElementById('oggetto').value = ""
+    document.getElementById('autore').value = ""
+    document.getElementById('pdfa').innerText = "No"
+    document.getElementById('firme').innerHTML = "Nessuna"
+    document.getElementById('oggetto').value = ""
+    document.getElementById('autore').value = ""
+    setRedMark(document.getElementById('check-titolo'))
+    setRedMark(document.getElementById('check-oggetto'))
+    setRedMark(document.getElementById('check-autore'))
+    setRedMark(document.getElementById('check-pdfa'))
+    setEmpty(document.getElementById('check-firme'))
+    document.getElementById("titolo_warn").style.display = "none"
+    document.getElementById("oggetto_warn").style.display = "none"
+    document.getElementById("autore_warn").style.display = "none"
+    document.getElementById("pdfa_warn").style.display = "none"
+    document.getElementById("font_warn").style.display = "none"
+    document.getElementById("firme_warn").style.display = "none"
+    document.getElementById("error_icon").style.display = "none"
+    document.getElementById("warn_icon").style.display = "none"
+    document.getElementById("pdfa_warn").setAttribute("flag","false")
+    document.getElementById("font_warn").setAttribute("flag","false")
+    document.getElementById("firme_warn").setAttribute("flag","false")
+    document.getElementById('div_icona_pdf').style.display = "block"
+    document.getElementById("canvas-preview").width = 0
+    document.getElementById("canvas-preview").height = 0
+    document.getElementById("canvas-preview").style.width = 0
+    document.getElementById("canvas-preview").style.height = 0
+    document.getElementById("canvas-div").style.height = 0
+    uploadStatus.textContent = ''
+    hideSaveButton()
+}
+
 let loaded_pdf
 
-document.getElementById('fileUploader').addEventListener('change', ({target}) => {
-    pdfjsLib.GlobalWorkerOptions.workerSrc = `https://cdn.jsdelivr.net/npm/pdfjs-dist@${pdfjsLib.version}/build/pdf.worker.mjs`
+function processFile(file) {
     const reader = new FileReader()
     reader.addEventListener('load', async () => {
         worker = new Worker(new URL('./background-worker.js', window.location.href ),{type: 'module'})
         const buffer = reader.result
         const pdf_data = new Uint8Array(buffer)
 
-        loaded_pdf = await PDFDocument.load(pdf_data)
+        loaded_pdf = await PDFDocument.load(pdf_data).catch(error => {
+            uploadStatus.textContent = `Errore durante il caricamento del file "${file.name}"`
+            console.log(error.message)
+            uploadStatus.className = 'upload-status error'
+        })
 
         const titolo = loaded_pdf.getTitle()
         const oggetto = loaded_pdf.getSubject()
         const tags = loaded_pdf.getKeywords()
         const autore = loaded_pdf.getAuthor()
-
-        document.getElementById('titolo').disabled = false
-        document.getElementById('oggetto').disabled = false
-        document.getElementById('autore').disabled = false
-        document.getElementById('titolo').value = ""
-        document.getElementById('oggetto').value = ""
-        document.getElementById('autore').value = ""
-        document.getElementById('pdfa').innerText = "No"
-        document.getElementById('firme').innerHTML = "Nessuna"
-        document.getElementById('oggetto').value = ""
-        document.getElementById('autore').value = ""
-        setRedMark(document.getElementById('check-titolo'))
-        setRedMark(document.getElementById('check-oggetto'))
-        setRedMark(document.getElementById('check-autore'))
-        setRedMark(document.getElementById('check-pdfa'))
-        setEmpty(document.getElementById('check-firme'))
-        document.getElementById("titolo_warn").style.display = "none"
-        document.getElementById("oggetto_warn").style.display = "none"
-        document.getElementById("autore_warn").style.display = "none"
-        document.getElementById("pdfa_warn").style.display = "none"
-        document.getElementById("font_warn").style.display = "none"
-        document.getElementById("firme_warn").style.display = "none"
-        document.getElementById("error_icon").style.display = "none"
-        document.getElementById("warn_icon").style.display = "none"
-        document.getElementById("pdfa_warn").setAttribute("flag","false")
-        document.getElementById("font_warn").setAttribute("flag","false")
-        document.getElementById("firme_warn").setAttribute("flag","false")
 
         if (titolo !== undefined && titolo !== "") {
             document.getElementById('titolo').value = titolo
@@ -289,9 +356,10 @@ document.getElementById('fileUploader').addEventListener('change', ({target}) =>
 
                 var outputScale = window.devicePixelRatio || 1
 
-                var canvas = document.getElementById('the-canvas')
+                var canvas = document.getElementById('canvas-preview')
                 var context = canvas.getContext('2d')
 
+                document.getElementById("canvas-div").style.height = "auto"
                 canvas.width = Math.floor(viewport.width * outputScale)
                 canvas.height = Math.floor(viewport.height * outputScale)
                 canvas.style.width = Math.floor(viewport.width) + "px"
@@ -307,12 +375,17 @@ document.getElementById('fileUploader').addEventListener('change', ({target}) =>
                 page.render(renderContext)
             }) 
         })
-        document.getElementById("anchor").scrollIntoView({
+        dropArea.scrollIntoView({
             behavior: 'smooth'
-        });
+        })
 
     })
-    reader.readAsArrayBuffer(target.files[0])
+
+    reader.readAsArrayBuffer(file)
+}
+
+document.getElementById('fileUploader').addEventListener('change', ({target}) => {
+    handleFile(target.files[0])
 })
 
 function checkPDFAFromAttributes(xml)
@@ -477,10 +550,10 @@ async function blobToBase64(blob) {
     const reader = new FileReader()
     reader.onloadend = () => {
       resolve(reader.result)
-    };
+    }
     reader.onerror = reject
     reader.readAsDataURL(blob)
-  });
+  })
 }
 
 async function setMetadata() {
@@ -503,10 +576,10 @@ async function setMetadata() {
     const pdfmarkBlob = new Blob([pdfmark], {type: "text/plain"})
     let blob64
     await blobToBase64(pdfmarkBlob).then(base64String => {
-        blob64 = base64String.split(',')[1];
+        blob64 = base64String.split(',')[1]
       })
       .catch(error => {
-        console.error("Error converting blob to base64:", error);
-      });
+        console.error("Error converting blob to base64:", error)
+      })
       return blob64
 }

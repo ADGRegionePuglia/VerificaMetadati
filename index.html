@@ -48,9 +48,12 @@
                     <p>Questo strumento verifica che i PDF rispettino le linee guida ed inoltre rende possibile la modifica diretta dei metadati e la conversione in formato PDF/A.</p>
               </span>
             </div>
-            <div id="anchor" class="riga-top border border-fix" style="margin-bottom: 30px;text-align: center;">
+            <div class="riga-top border border-fix" style="margin-bottom: 30px;text-align: center;">
+            <div id="drop-area" class="drop-area">
                 <h3>SCEGLI FILE PDF</h3>
                 <input id="fileUploader" type="file" accept=".pdf" autocomplete="off" style="margin-left: 15px;">
+            </div>
+            <div id="upload-status" class="upload-status"></div>
             </div>
         </div>
     </div>
@@ -153,7 +156,7 @@
                     <img src="public/pdf-file.svg" style="max-width: 96px;" alt="Icona PDF">
                 </div>
                 <div id="canvas-div" style="display: none;">
-                    <canvas id="the-canvas"></canvas>
+                    <canvas id="canvas-preview"></canvas>
                 </div>
             </div>
         </div>

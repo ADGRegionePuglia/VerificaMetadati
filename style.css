@@ -170,6 +170,7 @@ p {
 
 .riga-top {
     display: flex;
+    flex-direction: column;
     width: 100%;
     align-items: center;
     justify-content: center;
@@ -268,4 +269,35 @@ svg {
     max-width: 350px;
     font-weight: bold;
     font-size: 18px;
+}
+
+.drop-area {
+    display: flex;
+    width: 100%;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.drop-area:hover,
+.drop-area.highlight {
+    background-color: #e9f5ff;
+}
+
+.drop-area p {
+    color: #555;
+}
+
+.upload-status {
+    font-weight: bold;
+    color: #007bff;
+}
+
+.upload-status.success {
+    color: #28a745;
+}
+
+.upload-status.error {
+    color: #dc3545;
 }
