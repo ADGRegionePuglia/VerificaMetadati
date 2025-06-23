@@ -206,7 +206,6 @@ async function downloadPDF() {
     const url = window.URL.createObjectURL(blob)
     const dataObject = {psDataURL: url, pdfmark:blob64}
     await alert_warn()
-    await worker.postMessage({ data: dataObject, target: 'wasm'})
     Swal.fire({
         title: 'Elaborazione in corso',
         allowOutsideClick: false,
@@ -216,6 +215,7 @@ async function downloadPDF() {
             Swal.showLoading()
         }
     })
+    await worker.postMessage({ data: dataObject, target: 'wasm'})
     new Promise((resolve, reject)=>{
         const listener = (e) => {
             resolve(e.data)
