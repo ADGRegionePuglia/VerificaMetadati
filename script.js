@@ -201,7 +201,7 @@ async function downloadPDF() {
     const blob64 = await setMetadata()
     var filename = document.getElementById("fileUploader").files[0].name
     filename = filename.slice(0, -4)+"_metadati.pdf"
-    const pdfBytes = await loaded_pdf.save({ useObjectStreams : false, addDefaultPage : false})
+    const pdfBytes = await loaded_pdf.save({ addDefaultPage : false})
     const blob = new Blob([pdfBytes], {type: "application/pdf"})
     const url = window.URL.createObjectURL(blob)
     const dataObject = {psDataURL: url, pdfmark:blob64}
@@ -219,6 +219,7 @@ async function downloadPDF() {
     new Promise((resolve, reject)=>{
         const listener = (e) => {
             resolve(e.data)
+            console.log(e.data)
             const xhr = new XMLHttpRequest()
             xhr.open("GET", e.data)
             xhr.responseType = "arraybuffer"
@@ -233,11 +234,13 @@ async function downloadPDF() {
             }
             xhr.send()
             worker.removeEventListener('message', listener)
-            setTimeout(()=> worker.terminate(), 0)
+            setTimeout(()=> {
+                worker.terminate()
+                initWorker()
+            }, 0)
         }
         worker.addEventListener('message', listener)
     })
-    initWorker()
 }
 
 document.getElementById('btn-save').addEventListener('click', async () => {
@@ -282,7 +285,7 @@ function resetPageState()
     hideSaveButton()
 }
 
-function initWorker()
+async function initWorker()
 {
     worker = new Worker(new URL('./background-worker.js', window.location.href ),{type: 'module'})
 }
@@ -292,7 +295,7 @@ let loaded_pdf
 function processFile(file) {
     const reader = new FileReader()
     reader.addEventListener('load', async () => {
-        initWorker()
+        await initWorker()
         const buffer = reader.result
         const pdf_data = new Uint8Array(buffer)
 
