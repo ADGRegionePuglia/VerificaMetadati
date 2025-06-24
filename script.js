@@ -229,6 +229,7 @@ async function downloadPDF() {
                 const pdfURL = window.URL.createObjectURL(blob)
                 const size = xhr.response.byteLength
                 resolve({pdfURL, size})
+                Swal.close()
             }
             xhr.send()
             worker.removeEventListener('message', listener)
@@ -236,7 +237,7 @@ async function downloadPDF() {
         }
         worker.addEventListener('message', listener)
     })
-    Swal.close()
+    initWorker()
 }
 
 document.getElementById('btn-save').addEventListener('click', async () => {
@@ -281,12 +282,17 @@ function resetPageState()
     hideSaveButton()
 }
 
+function initWorker()
+{
+    worker = new Worker(new URL('./background-worker.js', window.location.href ),{type: 'module'})
+}
+
 let loaded_pdf
 
 function processFile(file) {
     const reader = new FileReader()
     reader.addEventListener('load', async () => {
-        worker = new Worker(new URL('./background-worker.js', window.location.href ),{type: 'module'})
+        initWorker()
         const buffer = reader.result
         const pdf_data = new Uint8Array(buffer)
 
