@@ -175,7 +175,7 @@ async function alert_warn() {
     const fw = document.getElementById("firme_warn").getAttribute("flag")
     let alert_text = ""
     if(pw==="true") alert_text += "<li>Il file non è nel formato PDF/A.</li><li>Ricordarsi di impostare la spunta per i PDF/A nelle opzioni di Word.</li>"
-    if(fow==="true") alert_text += "<li>Trovati font non inclusi nel PDF, questi font verrano sostituiti durante la conversione.</li><li>Verificare che il file finale non presenti difetti grafici.</li>"
+    if(fow==="true") alert_text += "<li>Trovati font non inclusi nel PDF, questi font verrano sostituiti durante la conversione.</li><li>Verificare che il PDF generato non presenti difetti grafici.</li>"
     if(fw==="true") alert_text += "<li>Le firme digitali verranno rimosse."
 
     if (alert_text !== "") await Swal.fire({
