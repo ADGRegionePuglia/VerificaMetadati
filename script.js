@@ -565,10 +565,13 @@ async function setMetadata() {
     if (loaded_pdf.getCreationDate() !== undefined) loaded_pdf.setCreationDate(new Date())
     if (loaded_pdf.getModificationDate() !== undefined) loaded_pdf.setModificationDate(new Date())
 
+    let keywords = ""
+    if (loaded_pdf.getKeywords() !== undefined) keywords = loaded_pdf.getKeywords()
+
     const pdfmark = `[ /Title (${document.getElementById('titolo').value})
     /Author (${document.getElementById('autore').value})
     /Subject (${document.getElementById('oggetto').value})
-    /Keywords (${loaded_pdf.getKeywords()})
+    /Keywords (${keywords})
     /Creator (Regione Puglia)
     /Producer (Regione Puglia - GPL Ghostscript 9.26)
     /DOCINFO pdfmark`
