@@ -361,7 +361,7 @@ function processFile(file) {
             pdf.getPage(1).then(function(page) {
                 var viewport = page.getViewport({ scale: 1, })
                 //var scale = 0.85
-                scale = document.getElementById("preview_title").clientWidth / viewport.width
+                var scale = document.getElementById("preview_title").clientWidth / viewport.width
                 if (scale > 1) scale = 1
                 viewport = page.getViewport({ scale: scale })
 
