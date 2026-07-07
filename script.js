@@ -54,7 +54,7 @@ dropArea.addEventListener('click', () => {
 
 const { PDFDocument, PDFName, PDFDict, PDFRef, PDFSignature} = PDFLib
 pdfjsLib.GlobalWorkerOptions.workerSrc = `https://cdn.jsdelivr.net/npm/pdfjs-dist@${pdfjsLib.version}/build/pdf.worker.mjs`
-console.log(`https://cdn.jsdelivr.net/npm/pdfjs-dist@${pdfjsLib.version}/build/pdf.worker.mjs`)
+
 //Producer Hack
 PDFDocument.prototype.updateInfoDict = function () {
 
