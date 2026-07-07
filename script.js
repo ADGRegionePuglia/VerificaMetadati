@@ -1,3 +1,5 @@
+import * as pdfjsLib from 'https://cdn.jsdelivr.net/npm/pdfjs-dist@5.2.133/+esm';
+
 const dropArea = document.getElementById('drop-area')
 const uploadStatus = document.getElementById('upload-status')
 
@@ -52,7 +54,7 @@ dropArea.addEventListener('click', () => {
 
 const { PDFDocument, PDFName, PDFDict, PDFRef, PDFSignature} = PDFLib
 pdfjsLib.GlobalWorkerOptions.workerSrc = `https://cdn.jsdelivr.net/npm/pdfjs-dist@${pdfjsLib.version}/build/pdf.worker.mjs`
-
+console.log(`https://cdn.jsdelivr.net/npm/pdfjs-dist@${pdfjsLib.version}/build/pdf.worker.mjs`)
 //Producer Hack
 PDFDocument.prototype.updateInfoDict = function () {
 
