@@ -226,14 +226,13 @@ async function downloadPDF() {
             xhr.open("GET", e.data)
             xhr.responseType = "arraybuffer"
             xhr.onload = function () {
+                //window.URL.revokeObjectURL(e.data) //does not work in chrome-based RAM is cleared too soon - Memory leak
                 const blob = new Blob([xhr.response], {type: "application/pdf"})
                 download(blob, filename, "application/pdf")
                 const pdfURL = window.URL.createObjectURL(blob)
                 const size = xhr.response.byteLength
                 resolve({pdfURL, size})
                 Swal.close()
-                urlblob = pdfURL;
-                //urlblob = e.data;
             }
             xhr.send()
             worker.removeEventListener('message', listener)
@@ -245,13 +244,6 @@ async function downloadPDF() {
         worker.addEventListener('message', listener)
     })
 }
-var urlblob;
-window.addEventListener('pagehide', (event) => {
-  if (!event.persisted && urlblob) {
-    window.URL.revokeObjectURL(urlblob)
-    console.log("blob cleared")
-  }
-});
 
 document.getElementById('btn-save').addEventListener('click', async () => {
     if (loaded_pdf !== undefined) await downloadPDF()
