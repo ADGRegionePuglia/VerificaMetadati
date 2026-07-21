@@ -172,11 +172,9 @@ function checkAll()
 }
 
 async function alert_warn() {
-    const pw = document.getElementById("pdfa_warn").getAttribute("flag")
     const fow = document.getElementById("font_warn").getAttribute("flag")
     const fw = document.getElementById("firme_warn").getAttribute("flag")
     let alert_text = ""
-    if(pw==="true") alert_text += "<li>Il file non è nel formato PDF/A.</li><li>Ricordarsi di impostare la spunta per i PDF/A nelle opzioni di Word.</li>"
     if(fw==="true") alert_text += "<li>Le firme digitali verranno rimosse.</li>"
     if(fow==="true") alert_text += "<li>Verificare che il PDF generato non presenti difetti grafici.</li>"
 
