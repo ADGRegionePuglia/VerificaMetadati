@@ -1,4 +1,4 @@
-import * as pdfjsLib from 'https://cdn.jsdelivr.net/npm/pdfjs-dist@5.2.133/+esm';
+import * as pdfjsLib from 'https://cdn.jsdelivr.net/npm/pdfjs-dist@5.2.133/build/pdf.mjs';
 
 const dropArea = document.getElementById('drop-area')
 const uploadStatus = document.getElementById('upload-status')
