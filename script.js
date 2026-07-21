@@ -356,7 +356,7 @@ function processFile(file) {
         document.getElementById('canvas-div').style.display = "block"
 
         //RENDER PREVIEW
-        /*
+        
         const pdf = pdfjsLib.getDocument({ data: pdf_data }).promise.then( (pdf) => {
             document.getElementById('div_icona_pdf').style.display = "none"
             pdf.getPage(1).then(function(page) {
@@ -390,7 +390,7 @@ function processFile(file) {
         dropArea.scrollIntoView({
             behavior: 'smooth'
         })
-        */
+        
 
     })
 
